@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS endpoints;
+DROP TABLE IF EXISTS collections;
+DROP TABLE IF EXISTS projects;

@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: shrikex-postgres-local
+    ports:
+      - "5433:5432"
+    env_file:
+      - ../../.env.local
+    volumes:
+      - postgres_local_data:/var/lib/postgresql
+
+volumes:
+  postgres_local_data:

@@ -1,0 +1,15 @@
+services:
+  postgres:
+    extends:
+      file: ./services/postgres/docker-compose.local.yml
+      service: postgres
+
+  redis:
+    extends:
+      file: ./services/redis/docker-compose.local.yml
+      service: redis
+
+  control-plane:
+    extends:
+      file: ./services/control-plane/docker-compose.local.yml
+      service: control-plane
