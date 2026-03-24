@@ -11,3 +11,4 @@ services:
 
 volumes:
   postgres_local_data:
+    name: shrikex_postgres_local_data
