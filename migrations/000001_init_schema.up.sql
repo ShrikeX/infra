@@ -1,5 +1,7 @@
+CREATE SCHEMA IF NOT EXISTS shrikex;
+
 -- Projects Table
-CREATE TABLE projects (
+CREATE TABLE shrikex.projects (
     id UUID PRIMARY KEY,
     name VARCHAR(512) NOT NULL,
     base_domain VARCHAR(2048) NOT NULL,
@@ -9,10 +11,10 @@ CREATE TABLE projects (
 );
 
 -- method type
-CREATE TYPE METHOD_TYPE AS ENUM('GET', 'POST', 'PUT', 'DELETE', 'PATCH');
+CREATE TYPE shrikex.METHOD_TYPE AS ENUM('GET', 'POST', 'PUT', 'DELETE', 'PATCH');
 
 -- Collections
-CREATE TABLE collections (
+CREATE TABLE shrikex.collections (
     id UUID PRIMARY KEY,
     project_id UUID NOT NULL,
     parent_collection_id UUID DEFAULT NULL,
@@ -21,34 +23,46 @@ CREATE TABLE collections (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT fk_project_id
         FOREIGN KEY (project_id)
-        REFERENCES projects(id),
+        REFERENCES shrikex.projects(id),
     CONSTRAINT fk_parent_collection_id
         FOREIGN KEY (parent_collection_id)
-        REFERENCES collections(id)
+        REFERENCES shrikex.collections(id)
 );
 
 
 -- Endpoints
-CREATE TABLE endpoints (
+CREATE TABLE shrikex.endpoints (
     id UUID PRIMARY KEY,
     project_id UUID NOT NULL,
     collection_id UUID NOT NULL,
 
     path VARCHAR(2048) NOT NULL,
-    method METHOD_TYPE NOT NULL,
+    method shrikex.METHOD_TYPE NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
 
     CONSTRAINT fk_project
         FOREIGN KEY(project_id)
-        REFERENCES projects(id),
+        REFERENCES shrikex.projects(id),
 
     CONSTRAINT fk_collection
         FOREIGN KEY(collection_id)
-        REFERENCES collections(id)
+        REFERENCES shrikex.collections(id),
+
+    CONSTRAINT uq_endpoint
+        UNIQUE (project_id, collection_id, path, method)
 );
 
 -- Index for fast proxy lookup
 CREATE INDEX idx_endpoints_lookup
-ON endpoints (project_id, path, method);
+ON shrikex.endpoints (project_id, path, method);
+
+CREATE INDEX idx_collections_project_id
+ON shrikex.collections(project_id);
+
+CREATE INDEX idx_collections_parent_id
+ON shrikex.collections(parent_collection_id);
+
+CREATE INDEX idx_endpoints_collection_id
+ON shrikex.endpoints(collection_id);
