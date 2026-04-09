@@ -1,25 +1,16 @@
-services:
-  postgres:
-    image: postgres:18
-    container_name: shrikex-postgres-local
-    ports:
-      - "5433:5432"
-    env_file:
-      - ../../.env.local
-    volumes:
-      - postgres_local_data:/var/lib/postgresql
-  
+services: 
   control-plane:
     build:
-      context: .
-      dockerfile: ../../../control-plane/control-plane.Dockerfile
+      context: ../../../control-plane
+      dockerfile: control-plane.Dockerfile
     container_name: shrikex-control-plane-local
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ../../.env.local
     depends_on:
       - postgres
+      - redis
 
 volumes:
   postgres_local_data:
